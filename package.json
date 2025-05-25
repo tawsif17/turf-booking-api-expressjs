@@ -1,0 +1,17 @@
+{
+  "name": "turf-booking-api-expressjs",
+  "version": "1.0.0",
+  "description": "Sports field(turf) booking backend using express js",
+  "license": "ISC",
+  "author": "Mohammad Tawsif Hasan",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cookie-parser": "^1.4.7",
+    "express": "^5.1.0"
+  }
+}
