@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Division {
+  id       Int       @id @default(autoincrement())
+  name     String
+  bn_name  String
+  districts District[]
+}
+
+model District {
+  id          Int       @id @default(autoincrement())
+  name        String
+  bn_name     String
+  division_id Int
+  division    Division @relation(fields: [division_id], references: [id], onDelete: Cascade)
+  locations   Location[]
+}
+
+model Location {
+  id          Int       @id @default(autoincrement())
+  district_id Int
+  name        String
+  bn_name     String
+  district    District @relation(fields: [district_id], references: [id], onDelete: Cascade)
+}
+
+model Role {
+  role_id Int    @id @default(autoincrement())
+  name    String
+  users   User[]
+}
+
+model User {
+  user_id      Int      @id @default(autoincrement())
+  name         String
+  phone_number String   @unique
+  email        String?  @unique
+  password     String
+  role_id      Int
+  bkash_number String?
+
+  role     Role     @relation(fields: [role_id], references: [role_id])
+  turfs    Turf[]   @relation("OwnerTurfs")
+  bookings Booking[]
+  turfStaff TurfStaff[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Turf {
+  turf_id        Int      @id @default(autoincrement())
+  owner_id       Int
+  location_name  String   // JSON data in code handles district/division
+  name           String
+  address_details String
+  advance_amount Int
+
+  owner     User         @relation("OwnerTurfs", fields: [owner_id], references: [user_id])
+  pricing   TurfPricing[]
+  // availability TurfAvailability[]
+  bookings  Booking[]
+  sports    TurfSports[]
+  staff     TurfStaff[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model TurfStaff {
+  id       Int  @id @default(autoincrement())
+  turf_id  Int
+  user_id  Int
+
+  turf Turf @relation(fields: [turf_id], references: [turf_id])
+  user User @relation(fields: [user_id], references: [user_id])
+}
+
+model Sports {
+  sport_id Int    @id @default(autoincrement())
+  name     String
+  turfs    TurfSports[]
+}
+
+model TurfSports {
+  id       Int  @id @default(autoincrement())
+  turf_id  Int
+  sport_id Int
+
+  turf  Turf   @relation(fields: [turf_id], references: [turf_id])
+  sport Sports @relation(fields: [sport_id], references: [sport_id])
+}
+
+model TurfPricing {
+  id              Int    @id @default(autoincrement())
+  turf_id         Int
+  price_starts_at String
+  price_ends_at   String
+  price           Int
+
+  turf Turf @relation(fields: [turf_id], references: [turf_id])
+}
+
+// model TurfAvailability {
+//   id         Int      @id @default(autoincrement())
+//   turf_id    Int
+//   day        WeekDay  // Enum for days of the week: MONDAY, TUESDAY, etc.
+//   start_time time     // e.g., 10:00
+//   end_time   time     // e.g., 22:00
+
+//   turf Turf @relation(fields: [turf_id], references: [turf_id])
+
+//   @@unique([turf_id, day]) // A turf can have one availability config per day
+// }
+
+enum WeekDay {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
+
+
+model Booking {
+  booking_id        Int       @id @default(autoincrement())
+  customer_id       Int
+  turf_id           Int
+  date              DateTime
+  starts_at         String
+  ends_at           String
+  booking_status    String    // ENUM (handled in code)
+  cancellation_reason String?
+  cancellation_time  DateTime?
+  payment_status     Boolean  // true = paid
+
+  customer User @relation(fields: [customer_id], references: [user_id])
+  turf     Turf @relation(fields: [turf_id], references: [turf_id])
+  payment  Payment?
+  
+  created_at DateTime @default(now())
+}
+
+model Payment {
+  payment_id           Int    @id @default(autoincrement())
+  booking_id           Int    @unique
+  amount               Int
+  commission_amount    Int
+  owner_amount         Int
+  sender_bkash_number  String
+  recipient_bkash_number String
+  transaction_id       String
+  payment_status       String // ENUM
+  created_at           DateTime @default(now())
+
+  booking Booking @relation(fields: [booking_id], references: [booking_id])
+}
