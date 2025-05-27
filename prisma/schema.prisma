@@ -12,6 +12,8 @@ model Division {
   name     String
   bn_name  String
   districts District[]
+
+  @@map("divisions") // Optional: maps to a specific table name in the database
 }
 
 model District {
@@ -21,6 +23,8 @@ model District {
   division_id Int
   division    Division @relation(fields: [division_id], references: [id], onDelete: Cascade)
   locations   Location[]
+
+  @@map("districts") // Optional: maps to a specific table name in the database
 }
 
 model Location {
@@ -29,12 +33,14 @@ model Location {
   name        String
   bn_name     String
   district    District @relation(fields: [district_id], references: [id], onDelete: Cascade)
+  @@map("locations") // Optional: maps to a specific table name in the database
 }
 
 model Role {
   role_id Int    @id @default(autoincrement())
   name    String
   users   User[]
+  @@map("roles") // Optional: maps to a specific table name in the database
 }
 
 model User {
@@ -53,6 +59,8 @@ model User {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  @@map("users") // Optional: maps to a specific table name in the database
 }
 
 model Turf {
@@ -72,6 +80,7 @@ model Turf {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+  @@map("turfs") // Optional: maps to a specific table name in the database
 }
 
 model TurfStaff {
@@ -81,12 +90,14 @@ model TurfStaff {
 
   turf Turf @relation(fields: [turf_id], references: [turf_id])
   user User @relation(fields: [user_id], references: [user_id])
+  @@map("turfstaff") // Optional: maps to a specific table name in the database
 }
 
 model Sports {
   sport_id Int    @id @default(autoincrement())
   name     String
   turfs    TurfSports[]
+  @@map("sports") // Optional: maps to a specific table name in the database
 }
 
 model TurfSports {
@@ -96,6 +107,7 @@ model TurfSports {
 
   turf  Turf   @relation(fields: [turf_id], references: [turf_id])
   sport Sports @relation(fields: [sport_id], references: [sport_id])
+  @@map("turfsports") // Optional: maps to a specific table name in the database
 }
 
 model TurfPricing {
@@ -106,6 +118,7 @@ model TurfPricing {
   price           Int
 
   turf Turf @relation(fields: [turf_id], references: [turf_id])
+  @@map("turfpricing") // Optional: maps to a specific table name in the database
 }
 
 // model TurfAvailability {
@@ -148,6 +161,7 @@ model Booking {
   payment  Payment?
   
   created_at DateTime @default(now())
+  @@map("bookings") // Optional: maps to a specific table name in the database
 }
 
 model Payment {
@@ -163,4 +177,5 @@ model Payment {
   created_at           DateTime @default(now())
 
   booking Booking @relation(fields: [booking_id], references: [booking_id])
+  @@map("payments") // Optional: maps to a specific table name in the database
 }
