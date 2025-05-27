@@ -15,7 +15,7 @@ async function main() {
   const districtsData = await loadJSON<{ districts: any[] }>('districts.json');
   const dhakaData = await loadJSON<{ locations: any[] }>('dhaka.json');
   const otherData = await loadJSON<{ locations: any[] }>('locations.json');
-
+  const rolesData = await loadJSON<{ roles: any[] }>('roles.json');
   console.log('🌍 Seeding Divisions...');
   for (const div of divisionsData.divisions) {
     await prisma.division.upsert({
@@ -66,7 +66,17 @@ async function main() {
       await prisma.location.create({ data: baseData });
     }
   }
-
+  console.log('👥 Seeding Roles...');
+  for (const role of rolesData.roles){
+    await prisma.role.upsert({
+        where: {role_id: role.id},
+        update: {},
+        create:{
+            role_id:role.id,
+            name:role.name
+        }
+    })
+  }
   console.log('✅ Done seeding.');
 }
 
