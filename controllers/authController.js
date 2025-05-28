@@ -34,6 +34,7 @@ exports.registerUser = async (req, res) => {
 
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
+    console.log(error," Registration error")
     res.status(500).json({ message: 'Registration failed', error: error.message });
   }
 };
@@ -55,7 +56,7 @@ exports.loginUser = async (req, res) => {
 
     const token = jwt.sign(
       { user_id: user.user_id, role: user.role.name },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET_KEY,
       { expiresIn: '7d' }
     );
 
@@ -69,6 +70,7 @@ exports.loginUser = async (req, res) => {
       },
     });
   } catch (error) {
+    console.log(error," Login error")
     res.status(500).json({ message: 'Login failed', error: error.message });
   }
 };
